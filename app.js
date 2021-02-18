@@ -7,6 +7,8 @@ const cors = require("cors");
 const passport = require("passport");
 const path = require("path");
 const requestIp = require("request-ip");
+const fs = require("fs");
+
 const apiRoute = require("./routes/api");
 const { getError } = require("./util/errorResponse");
 const SocketSingleton = require("./util/SocketSingleton");
@@ -60,6 +62,10 @@ SocketSingleton.io.on("move", (data) => {
 //error handling middleware
 app.use((error,req, res, next) => {
     console.log(error);
+    fs.appendFile('error.log', error, function (err) {
+      if (err) throw err;
+      console.log('Saved!');
+    });
     getError(error,req, res, next)
 });
 
