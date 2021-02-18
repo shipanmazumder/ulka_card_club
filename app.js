@@ -62,7 +62,7 @@ SocketSingleton.io.on("move", (data) => {
 //error handling middleware
 app.use((error,req, res, next) => {
     console.log(error);
-    fs.appendFile('error.log', error, function (err) {
+    fs.appendFile('error.log', JSON.stringify(error.message), function (err) {
       if (err) throw err;
       console.log('Saved!');
     });
