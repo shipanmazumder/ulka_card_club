@@ -12,8 +12,6 @@ const alphabet = "0123456789";
 const nanoid = customAlphabet(alphabet, 12);
 const { v4: uuidv4 } = require("uuid");
 const SocketSingleton = require("../../util/SocketSingleton");
-const Game = require("../../models/Game");
-const { collectXP } = require("../../util/XPCalculation");
 
 /**
  * player update or create and also authentic
@@ -209,7 +207,7 @@ const playerUpdateOrCreate = async (
           location: location,
           challenges: [],
           currentXP: 0,
-          currentLevelXP: 200,
+          currentLevelXP: 0,
           deviceLog: [duId],
           level: 0,
         });
@@ -267,98 +265,3 @@ const generateJwtToken = (player) => {
   return `Bearer ${token}`;
 };
 
-exports.gameOver = async (req, res, next) => {
-  let gameId = req.body.game_id;
-  let position = req.body.position;
-  let totalPlayer = req.body.total_player;
-  let gameMode = req.body.game_mode;
-  let totalRound = req.body.total_round;
-  let winStatus = false;
-  let userId = req.user.id;
-  Game.findOne({ gameId: gameId })
-    .then((game) => {
-      if (!game) {
-        return response(res, false, 404, "No Games found", null);
-      }
-      Player.findOne({ _id: userId })
-        .then((player) => {
-          if (!player) {
-            return response(res, false, 404, "No Player found", null);
-          }
-          if (position == 1) {
-            winStatus = true;
-          }
-
-          let gameModeInfo = game.gameMode.find(
-            (mode) => mode.modeName === gameMode
-          );
-          let getXPInfo = collectXP(game, player, winStatus, totalRound);
-          let gamePlayInfo = gameCoinCollection(
-            game,
-            player,
-            winStatus,
-            gameModeInfo,
-            totalPlayer,
-            position,
-            totalRound
-          );
-          player.level = getXPInfo.currentLevel;
-          player.currentLevelXP = getXPInfo.currentLevelXP;
-          player.currentXP = getXPInfo.currentXP;
-          player.totalCoin = gamePlayInfo.currentTotalCoin;
-          player.playHistory = player.playHistory.push(
-            gamePlayInfo.playHistory
-          );
-          player
-            .save()
-            .then((result) => {
-              let data = {
-                player: result,
-              };
-              return response(res, false, 200, "Player Score Updated", data);
-            })
-            .catch((err) => {
-              const error = new Error(err);
-              error.status = 500;
-              return next(error);
-            });
-        })
-        .catch((err) => {
-          const error = new Error(err);
-          error.status = 500;
-          return next(error);
-        });
-    })
-    .catch((err) => {
-      const error = new Error(err);
-      error.status = 500;
-      return next(error);
-    });
-};
-let gameCoinCollection = (
-  game,
-  player,
-  winStatus,
-  gameModeInfo,
-  totalPlayer,
-  position,
-  totalRound
-) => {
-  let currentTotalCoin = player.totalCoin;
-  let currentMatchCoin = gameModeInfo.modeAmount;
-  if (winStatus) {
-    currentTotalCoin = currentTotalCoin + currentMatchCoin * 2;
-  }
-  return {
-    currentTotalCoin: currentTotalCoin,
-    playHistory: {
-      gameId: game._id,
-      position: position,
-      gameMode: gameModeInfo.modeName,
-      totalRound: totalRound,
-      winStatus: winStatus,
-      coin: currentTotalCoin,
-      totalPlayer: totalPlayer
-    },
-  };
-};

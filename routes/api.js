@@ -1,9 +1,10 @@
 const express = require("express");
-const { playerAuthentic,searchFriends, gameOver } = require("../controllers/API/PlayerController");
+const { playerAuthentic,searchFriends } = require("../controllers/API/PlayerController");
 const isAuth = require("../middleware/isAuth");
 const {playerValidate} = require("../validator/playerValidator");
 const SocketSingleton = require("../util/SocketSingleton");
 const { gameOverValidate } = require("../validator/gameOverValidate");
+const { gameOver, gameAdd } = require("../controllers/API/GameOverController");
 
 const route = express.Router();
 /* GET home page. */
@@ -20,5 +21,6 @@ route.get('/', function(req, res, next) {
 // route.post("/player-authentic",playerAuthentic)
 route.post("/player-authentic",playerValidate,playerAuthentic)
 route.get("/search-friends",isAuth,searchFriends)
-route.post("/game-over",isAuth,gameOverValidate,gameOver)
+route.post("/game-over",gameOverValidate,isAuth,gameOver)
+route.post("/game-add",isAuth,gameAdd)
 module.exports = route;

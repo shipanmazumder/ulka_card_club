@@ -11,7 +11,6 @@ exports.gameOverValidate = [
     .isEmpty()
     .withMessage("Position Required"),
   check("game_mode")
-    .trim()
     .not()
     .isEmpty()
     .withMessage("Game Mode Required"),

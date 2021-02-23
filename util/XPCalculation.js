@@ -8,7 +8,7 @@
 exports.collectXP = (game, player, win_status, total_round) => {
   let nextLevelXP = 20;
   let initialXP = 0;
-  let currentBucketLevel = parseInt(plaver.level / 10);
+  let currentBucketLevel = parseInt(player.level / 10);
   let currentLevel = player.level;
   let currentXP = player.currentXP;
   let currentLevelXP = player.currentLevelXP;
@@ -20,16 +20,16 @@ exports.collectXP = (game, player, win_status, total_round) => {
   }
   let currentMatchXPGain =
     initialXP + initialXP * (0.1 * currentBucketLevel) + roundXP;
-  let totalXP = currentMatchXPGain + currentXP;
+  let totalXP = Math.round(currentMatchXPGain + currentXP);
   if (currentLevel > 0) {
-    nextLevelXP = Math.round(currentLevelXP * 0.1);
+    nextLevelXP = currentLevelXP+Math.round(currentLevelXP * 0.1);
   }
-  if (nextLevelXP >= totalXP) {
+  if (nextLevelXP <= totalXP) {
     currentLevel = currentLevel + 1;
-    currentXP = nextLevelXP - totalXP;
-    currentLevelXP = nextLevelXP;
+    currentXP = Math.round(totalXP-nextLevelXP);
+    currentLevelXP = Math.round(nextLevelXP);
   } else {
-    currentXP = totalXP;
+    currentXP = Math.round(totalXP);
   }
   return {
     currentXP: currentXP,
