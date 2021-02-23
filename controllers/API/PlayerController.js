@@ -148,7 +148,6 @@ const playerUpdateOrCreate = async (
       }
     }
   }
-  console.log(friendsMap);
   Player.findOne({ loginId: loginId })
     .then(async (player) => {
       if (player) {
@@ -203,14 +202,12 @@ const playerUpdateOrCreate = async (
           userId: uuidv4(),
           firebase_token: firebase_token,
           pictureUrl: pictureUrl,
-          xp: 0,
-          level: 0,
           coin: firstReward.coinAmount,
           friends: friendsMap,
           location: location,
           challenges: [],
-          xp: 0,
-          xpDifference:200,
+          currentXP: 0,
+          currentLevelXP:200,
           deviceLog: [duid],
           level: 0,
         });
