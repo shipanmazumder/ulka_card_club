@@ -4,7 +4,7 @@ exports.playerValidate = [
     .trim()
     .escape()
     .custom((value, { req }) => {
-      if (req.body.fbId) {
+      if (req.body.fb_id) {
         if(value=="")
         {
           throw new Error("Name is required");
@@ -19,13 +19,13 @@ exports.playerValidate = [
         return true;
       }
     }),
-  check("duid").not().isEmpty().withMessage("Device id Required"),
+  check("du_id").not().isEmpty().withMessage("Device id Required"),
   check("firebase_token")
     .not()
     .isEmpty()
     .withMessage("Firrbase Token Required"),
-  check("pictureUrl").custom((value, { req }) => {
-    if (req.body.fbId) {
+  check("picture_url").custom((value, { req }) => {
+    if (req.body.fb_id) {
       if(value===""){
         throw new Error("Picture is required");
       }else{

@@ -12,6 +12,8 @@ const alphabet = "0123456789";
 const nanoid = customAlphabet(alphabet, 12);
 const { v4: uuidv4 } = require("uuid");
 const SocketSingleton = require("../../util/SocketSingleton");
+const Game = require("../../models/Game");
+const { collectXP } = require("../../util/XPCalculation");
 
 /**
  * player update or create and also authentic
@@ -26,10 +28,10 @@ exports.playerAuthentic = async (req, res, next) => {
   }
   let loginId = "";
   let name = req.body.name;
-  let fbId = req.body.fbId;
-  let duid = req.body.duid;
+  let fbId = req.body.fb_id;
+  let duId = req.body.du_id;
   if (!fbId) {
-    Player.findOne({ loginId: duid })
+    Player.findOne({ loginId: duId })
       .then(async (player) => {
         if (player) {
           name = player.name;
@@ -40,9 +42,9 @@ exports.playerAuthentic = async (req, res, next) => {
             tempName = `Guest_${nanoid()}`;
           }
           name = tempName;
-          loginId = duid;
+          loginId = duId;
         }
-        playerUpdateOrCreate(name, fbId, duid, loginId, req, res, next);
+        playerUpdateOrCreate(name, fbId, duId, loginId, req, res, next);
       })
       .catch((err) => {
         const error = new Error(err);
@@ -55,18 +57,18 @@ exports.playerAuthentic = async (req, res, next) => {
         if (player) {
           //if previous login with facebook
           loginId = fbId;
-          playerUpdateOrCreate(name, fbId, duid, loginId, req, res, next);
+          playerUpdateOrCreate(name, fbId, duId, loginId, req, res, next);
         } else {
-          Player.findOne({ loginId: duid })
+          Player.findOne({ loginId: duId })
             .then((gPlayer) => {
               if (gPlayer) {
                 //if previous login with device id but now convert with fb id
-                loginId = duid;
+                loginId = duId;
               } else {
                 //new login with facebook
                 loginId = fbId;
               }
-              playerUpdateOrCreate(name, fbId, duid, loginId, req, res, next);
+              playerUpdateOrCreate(name, fbId, duId, loginId, req, res, next);
             })
             .catch((gerror) => {
               const error = new Error(gerror);
@@ -113,7 +115,7 @@ exports.friendRequest = () => {};
  * player update or create
  * @param {*} name
  * @param {*} fbId
- * @param {*} duid
+ * @param {*} duId
  * @param {*} loginId
  * @param {*} req
  * @param {*} res
@@ -122,14 +124,14 @@ exports.friendRequest = () => {};
 const playerUpdateOrCreate = async (
   name,
   fbId,
-  duid,
+  duId,
   loginId,
   req,
   res,
   next
 ) => {
   let firebase_token = req.body.firebase_token;
-  let pictureUrl = req.body.pictureUrl;
+  let pictureUrl = req.body.picture_url;
   let friends = req.body.friends;
   let ip = req.clientIp;
   if (process.env.APP_ENV == "development") {
@@ -158,11 +160,11 @@ const playerUpdateOrCreate = async (
           (friend) => friend.type === "GAME"
         );
         friendsMap = [...friendsMap, ...oldGameFirends];
-        if (player.duid !== duid) {
+        if (player.duId !== duId) {
           let deviceLogs = player.deviceLog.filter(
-            (deviceLog) => deviceLog !== duid
+            (deviceLog) => deviceLog !== duId
           );
-          deviceLogs = [...deviceLogs, duid];
+          deviceLogs = [...deviceLogs, duId];
           player.deviceLog = deviceLogs;
         }
         player.name = name;
@@ -170,7 +172,7 @@ const playerUpdateOrCreate = async (
         player.pictureUrl = pictureUrl;
         player.friends = friendsMap;
         player.loginId = loginId;
-        player.duid = duid;
+        player.duId = duId;
         player.save();
         var token = generateJwtToken(player);
 
@@ -179,11 +181,11 @@ const playerUpdateOrCreate = async (
           token: token,
           player: player,
         };
-        var socketMessage={
-          message:"New Device Login",
-          data:player
-        }
-        SocketSingleton.io.emit(`login_${player.loginId}`,socketMessage);
+        var socketMessage = {
+          message: "New Device Login",
+          data: player,
+        };
+        SocketSingleton.io.emit(`login_${player.loginId}`, socketMessage);
         response(res, true, 200, "Player Update Successfull", data);
       } else {
         const firstReward = await FirstReward.findOne().sort("_id");
@@ -197,18 +199,18 @@ const playerUpdateOrCreate = async (
         player = new Player({
           name: name,
           fbId: fbId,
-          duid: duid,
+          duId: duId,
           loginId: loginId,
           userId: uuidv4(),
           firebase_token: firebase_token,
           pictureUrl: pictureUrl,
-          coin: firstReward.coinAmount,
+          totalCoin: firstReward.coinAmount,
           friends: friendsMap,
           location: location,
           challenges: [],
           currentXP: 0,
-          currentLevelXP:200,
-          deviceLog: [duid],
+          currentLevelXP: 200,
+          deviceLog: [duId],
           level: 0,
         });
         player
@@ -220,11 +222,11 @@ const playerUpdateOrCreate = async (
               token: token,
               player: result,
             };
-            var socketMessage={
-              message:"New Device Login",
-              data:player
-            }
-            SocketSingleton.io.emit(`login_${player.loginId}`,socketMessage);
+            var socketMessage = {
+              message: "New Device Login",
+              data: player,
+            };
+            SocketSingleton.io.emit(`login_${player.loginId}`, socketMessage);
             response(res, true, 200, "Player Add Successfull", data);
           })
           .catch((err) => {
@@ -263,4 +265,100 @@ const generateJwtToken = (player) => {
     }
   );
   return `Bearer ${token}`;
+};
+
+exports.gameOver = async (req, res, next) => {
+  let gameId = req.body.game_id;
+  let position = req.body.position;
+  let totalPlayer = req.body.total_player;
+  let gameMode = req.body.game_mode;
+  let totalRound = req.body.total_round;
+  let winStatus = false;
+  let userId = req.user.id;
+  Game.findOne({ gameId: gameId })
+    .then((game) => {
+      if (!game) {
+        return response(res, false, 404, "No Games found", null);
+      }
+      Player.findOne({ _id: userId })
+        .then((player) => {
+          if (!player) {
+            return response(res, false, 404, "No Player found", null);
+          }
+          if (position == 1) {
+            winStatus = true;
+          }
+
+          let gameModeInfo = game.gameMode.find(
+            (mode) => mode.modeName === gameMode
+          );
+          let getXPInfo = collectXP(game, player, winStatus, totalRound);
+          let gamePlayInfo = gameCoinCollection(
+            game,
+            player,
+            winStatus,
+            gameModeInfo,
+            totalPlayer,
+            position,
+            totalRound
+          );
+          player.level = getXPInfo.currentLevel;
+          player.currentLevelXP = getXPInfo.currentLevelXP;
+          player.currentXP = getXPInfo.currentXP;
+          player.totalCoin = gamePlayInfo.currentTotalCoin;
+          player.playHistory = player.playHistory.push(
+            gamePlayInfo.playHistory
+          );
+          player
+            .save()
+            .then((result) => {
+              let data = {
+                player: result,
+              };
+              return response(res, false, 200, "Player Score Updated", data);
+            })
+            .catch((err) => {
+              const error = new Error(err);
+              error.status = 500;
+              return next(error);
+            });
+        })
+        .catch((err) => {
+          const error = new Error(err);
+          error.status = 500;
+          return next(error);
+        });
+    })
+    .catch((err) => {
+      const error = new Error(err);
+      error.status = 500;
+      return next(error);
+    });
+};
+let gameCoinCollection = (
+  game,
+  player,
+  winStatus,
+  gameModeInfo,
+  totalPlayer,
+  position,
+  totalRound
+) => {
+  let currentTotalCoin = player.totalCoin;
+  let currentMatchCoin = gameModeInfo.modeAmount;
+  if (winStatus) {
+    currentTotalCoin = currentTotalCoin + currentMatchCoin * 2;
+  }
+  return {
+    currentTotalCoin: currentTotalCoin,
+    playHistory: {
+      gameId: game._id,
+      position: position,
+      gameMode: gameModeInfo.modeName,
+      totalRound: totalRound,
+      winStatus: winStatus,
+      coin: currentTotalCoin,
+      totalPlayer: totalPlayer
+    },
+  };
 };

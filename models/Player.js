@@ -7,13 +7,42 @@ const Friends = new Schema({
     type: String,
     ref: "Player",
   },
-  type:{
-    type:String
+  type: {
+    type: String,
   },
-  friendStatus:{
-    type:Boolean
-  }
+  friendStatus: {
+    type: Boolean,
+  },
 });
+const playHistory = new Schema(
+  {
+    gameId: {
+      type: Schema.Types.ObjectId,
+      ref: "Game",
+    },
+    position: {
+      type: Number,
+    },
+    totalPlayer:{
+      type:Number
+    },
+    gameMode: {
+      type: String,
+    },
+    totalRound: {
+      type: Number,
+    },
+    winStatus: {
+      type: Boolean,
+    },
+    coin: {
+      type: Number,
+    },
+  },
+  {
+    timestamps: true,
+  }
+);
 const playerSchema = new Schema(
   {
     name: {
@@ -24,12 +53,12 @@ const playerSchema = new Schema(
       type: String,
       required: true,
     },
-    loginId:{
+    loginId: {
       type: String,
       required: true,
     },
     fbId: {
-      type: String
+      type: String,
     },
     duid: {
       type: String,
@@ -40,11 +69,11 @@ const playerSchema = new Schema(
     pictureUrl: {
       type: String,
     },
-    totalPlayedMatch:{
-      type:Number
+    totalPlayedMatch: {
+      type: Number,
     },
-    totalWinMatch:{
-      type:Number
+    totalWinMatch: {
+      type: Number,
     },
     friends: [Friends],
     currentXP: {
@@ -53,12 +82,13 @@ const playerSchema = new Schema(
     level: {
       type: Number,
     },
-    coin: {
+    totalCoin: {
       type: Number,
     },
-    currentLevelXP:{
-      type:Number
+    currentLevelXP: {
+      type: Number,
     },
+    playHistory: [playHistory],
     location: {
       country: {
         type: String,
@@ -73,15 +103,17 @@ const playerSchema = new Schema(
         type: Array,
       },
     },
-    challenges: [{
-      friendId:{
-        type:String,
-        ref: "Player"
-      }
-    }],
-    deviceLog:{
-      type:Array
-    }
+    challenges: [
+      {
+        friendId: {
+          type: String,
+          ref: "Player",
+        },
+      },
+    ],
+    deviceLog: {
+      type: Array,
+    },
   },
   {
     timestamps: true,

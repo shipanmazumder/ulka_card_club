@@ -1,7 +1,16 @@
 const mongoose = require("mongoose");
 
 const Schema = mongoose.Schema;
-
+const gameMode=new Schema(
+  {
+    modeName:{
+      type:String
+    },
+    modeAmount:{
+      type:Number
+    }
+  }
+);
 const gameSchema = new Schema(
   {
     name: {
@@ -20,7 +29,8 @@ const gameSchema = new Schema(
     },
     roundXP:{
         type:Number
-    }
+    },
+    gameMode:[gameMode]
   },
   {
     timestamps: true,
