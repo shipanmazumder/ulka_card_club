@@ -1,0 +1,1 @@
+console.log(parseInt(15/2))

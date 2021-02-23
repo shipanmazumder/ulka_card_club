@@ -46,11 +46,8 @@ const playerSchema = new Schema(
     totalWinMatch:{
       type:Number
     },
-    xpDifference:{
-      type:Number
-    },
     friends: [Friends],
-    xp: {
+    currentXP: {
       type: Number,
     },
     level: {
@@ -58,6 +55,9 @@ const playerSchema = new Schema(
     },
     coin: {
       type: Number,
+    },
+    currentLevelXP:{
+      type:Number
     },
     location: {
       country: {

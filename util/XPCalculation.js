@@ -1,30 +1,31 @@
-exports.collect = (
-  currentLevel,
-  difference = 200,
-  scoreDifference,
-  currentXP,
-  loose = true
-) => {
-  const START_XP = 100;
-  let nextLevel = currentLevel;
-  let currentMatchGainXP = START_XP + currentLevel * 20;
-  difference = ((currentLevel + 1) % 3) == 0 ? difference * 2 : difference;
-  if (loose) {
-    currentMatchGainXP = currentMatchGainXP - scoreDifference * 10;
-    let minimumGainXp = Math.round(currentMatchGainXP * 0.25);
-    if (currentMatchGainXP < minimumGainXp) {
-      currentMatchGainXP = minimumGainXp;
-    }
+exports.collectXP = (game, player, match_status) => {
+  let nextLevelXP = 20;
+  let initialXP = 0;
+  let currentBucketLevel = parseInt(plaver.level / 10);
+  let currentLevel = player.level;
+  let currentXP = player.currentXP;
+  let currentLevelXP = player.currentLevelXP;
+
+  if (match_status === "Win") {
+    initialXP = game.winXP;
+  } else {
+    initialXP = game.loseXP;
   }
-  let needNextLevelXp = START_XP + currentLevel * difference;
-  currentXP = currentXP + gainXp;
-  if (currentXP >= needNextLevelXp) {
-    nextLevel = currentLevel + 1;
-    currentXP = 0;
+  let currentMatchXPGain = initialXP + initialXP * (0.1 * currentBucketLevel);
+  let totalXP = currentMatchXPGain + currentXP;
+  if (currentLevel > 0) {
+    nextLevelXP = Math.round(currentLevelXP * 0.1);
+  }
+  if (nextLevelXP >= totalXP) {
+    currentLevel = currentLevel + 1;
+    currentXP = nextLevelXP - totalXP;
+    currentLevelXP = nextLevelXP;
+  } else {
+    currentXP = totalXP;
   }
   return {
-    currentLevel: nextLevel,
     currentXP: currentXP,
-    difference: difference,
+    currentLevel: currentLevel,
+    currentLevelXP: currentLevelXP,
   };
 };
