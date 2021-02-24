@@ -8,6 +8,8 @@ const { validationResult } = require("express-validator");
 const { validationError } = require("../../util/errorResponse");
 const { response } = require("../../util/responseFormat");
 const { customAlphabet } = require("nanoid");
+const { playerResponse } = require("../../util/PlayerResponse");
+
 const alphabet = "0123456789";
 const nanoid = customAlphabet(alphabet, 12);
 const { v4: uuidv4 } = require("uuid");
@@ -173,18 +175,19 @@ const playerUpdateOrCreate = async (
         player.duId = duId;
         player.save();
         var token = generateJwtToken(player);
-
-        var data = {
-          isNewPlayer: false,
-          token: token,
-          player: player,
-        };
-        var socketMessage = {
-          message: "New Device Login",
-          data: player,
-        };
-        SocketSingleton.io.emit(`login_${player.loginId}`, socketMessage);
-        response(res, true, 200, "Player Update Successfull", data);
+         playerResponse(req, res, next, player._id, (playerData) => {
+          var data = {
+            isNewPlayer: false,
+            token: token,
+            player: playerData,
+          };
+          var socketMessage = {
+            message: "New Device Login",
+            data: data,
+          };
+          SocketSingleton.io.emit(`login_${player.loginId}`, socketMessage);
+          response(res, true, 200, "Player Update Successfull", data);
+        });
       } else {
         const firstReward = await FirstReward.findOne().sort("_id");
         var geoLocation = geoipLite.lookup(ip);
@@ -194,12 +197,16 @@ const playerUpdateOrCreate = async (
           city: geoLocation.city,
           ll: geoLocation.ll,
         };
+        let tempUserId = `${nanoid()}`;
+        while (await Player.findOne({ userId: tempUserId })) {
+          tempUserId = `${nanoid()}`;
+        }
         player = new Player({
           name: name,
           fbId: fbId,
           duId: duId,
           loginId: loginId,
-          userId: uuidv4(),
+          userId: tempUserId,
           firebase_token: firebase_token,
           pictureUrl: pictureUrl,
           totalCoin: firstReward.coinAmount,
@@ -215,17 +222,19 @@ const playerUpdateOrCreate = async (
           .save()
           .then((result) => {
             var token = generateJwtToken(result);
-            var data = {
-              isNewPlayer: true,
-              token: token,
-              player: result,
-            };
-            var socketMessage = {
-              message: "New Device Login",
-              data: player,
-            };
-            SocketSingleton.io.emit(`login_${player.loginId}`, socketMessage);
-            response(res, true, 200, "Player Add Successfull", data);
+            playerResponse(req,res,next,result._id,(playerData)=>{
+              var data = {
+                isNewPlayer: true,
+                token: token,
+                player: playerData,
+              };
+              var socketMessage = {
+                message: "New Device Login",
+                data: player,
+              };
+              SocketSingleton.io.emit(`login_${player.loginId}`, socketMessage);
+              response(res, true, 200, "Player Add Successfull", data);
+            });
           })
           .catch((err) => {
             const error = new Error(err);
@@ -235,6 +244,7 @@ const playerUpdateOrCreate = async (
       }
     })
     .catch((err) => {
+      console.log(err);
       const error = new Error(err);
       error.status = 500;
       return next(error);
@@ -264,4 +274,3 @@ const generateJwtToken = (player) => {
   );
   return `Bearer ${token}`;
 };
-

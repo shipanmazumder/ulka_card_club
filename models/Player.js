@@ -4,7 +4,7 @@ const Schema = mongoose.Schema;
 
 const Friends = new Schema({
   friendId: {
-    type: String,
+    type: Schema.Types.ObjectId,
     ref: "Player",
   },
   type: {
@@ -71,9 +71,11 @@ const playerSchema = new Schema(
     },
     totalPlayedMatch: {
       type: Number,
+      default:0
     },
     totalWinMatch: {
       type: Number,
+      default:0
     },
     friends: [Friends],
     currentXP: {
@@ -81,12 +83,15 @@ const playerSchema = new Schema(
     },
     level: {
       type: Number,
+      default:0
     },
     totalCoin: {
       type: Number,
+      default:0
     },
     currentLevelXP: {
       type: Number,
+      default:0
     },
     playHistory: [playHistory],
     location: {

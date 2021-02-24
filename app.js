@@ -12,6 +12,7 @@ const fs = require("fs");
 const apiRoute = require("./routes/api");
 const { getError } = require("./util/errorResponse");
 const SocketSingleton = require("./util/SocketSingleton");
+const Player = require("./models/Player");
 
 //setup express app
 const app = express();
@@ -24,7 +25,6 @@ const MONGO_CONFIG = {
   useNewUrlParser: true,
   useCreateIndex: true,
 };
-
 app.use(bodyParser.json());
 app.use(morgan("dev"));
 app.use(cors());
@@ -44,7 +44,6 @@ app.use((error,req, res, next) => {
     console.log(error);
     getError(error,req, res, next)
 });
-
 mongoose
   .connect(process.env.MONGODBURI, MONGO_CONFIG)
   .then((result) => {
