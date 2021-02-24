@@ -58,7 +58,7 @@ exports.playerResponse =  (rew,res,next,id,onProcessDone) => {
         totalCoin: player.totalCoin,
         friends: friends,
         currentXP: player.currentXP,
-        targetXP: player.currentLevelXP + player.currentLevelXP * 0.1,
+        targetXP: player.level==0?20:player.currentLevelXP + player.currentLevelXP * 0.1,
         level: player.level,
         totalWinMatch: player.totalWinMatch,
         totalPlayedMatch: player.totalPlayedMatch,
