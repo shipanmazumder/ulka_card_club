@@ -27,4 +27,9 @@ exports.imageFilter = (req, file, cb) => {
       });
     });
   };
-  
+  exports.getRandomInt = (max) => {
+    return Math.floor(Math.random() * Math.floor(max));
+  };
+  exports.randomIntFromInterval=(min, max) => {// min and max included 
+      return Math.floor(Math.random() * (max - min + 1) + min);
+  }
