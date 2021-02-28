@@ -49,6 +49,12 @@ const playerSchema = new Schema(
       type: String,
       required: true,
     },
+    email: {
+      type: String
+    },
+    phone: {
+      type: String
+    },
     userId: {
       type: String,
       required: true,
@@ -64,6 +70,9 @@ const playerSchema = new Schema(
       type: String,
     },
     firebase_token: {
+      type: String,
+    },
+    fb_access_token: {
       type: String,
     },
     pictureUrl: {
@@ -93,6 +102,38 @@ const playerSchema = new Schema(
       type: Number,
       default:0
     },
+    totalWinCoin:[
+      {
+        coin:{
+          type:Number,
+          default:0
+        },
+        gameId: {
+          type: Schema.Types.ObjectId,
+          ref: "Game",
+        },
+        lastWinTimeStamp:{
+          type:Date,
+          default: Date.now
+        }
+      }
+    ],
+    weeklyWinCoin:[
+      {
+        coin:{
+          type:Number,
+          default:0
+        },
+        gameId: {
+          type: Schema.Types.ObjectId,
+          ref: "Game",
+        },
+        lastWinTimeStamp:{
+          type:Date,
+          default: Date.now
+        }
+      }
+    ],
     playHistory: [playHistory],
     location: {
       country: {

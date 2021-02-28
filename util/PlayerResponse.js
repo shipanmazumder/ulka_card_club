@@ -18,10 +18,11 @@ exports.playerResponse =  (rew,res,next,id,onProcessDone) => {
       let friends = [];
       if (player.friends) {
         friends = player.friends.map((friend) => {
+          console.log(friend)
           return {
-            name: friend.name,
-            fbId: friend.fbId,
-            userId: friend.userId,
+            name: friend.friendId.name,
+            fbId: friend.friendId.fbId,
+            userId: friend.friendId.userId,
           };
         });
       }
@@ -41,7 +42,7 @@ exports.playerResponse =  (rew,res,next,id,onProcessDone) => {
             return JSON.stringify(obj2.gameId._id) === JSON.stringify(obj);
           });
           return {
-              gameId:game.gameId.game_unique_id,
+              gameId:game.gameId.gameUniqueId,
               name:game.gameId.name
           }
         });

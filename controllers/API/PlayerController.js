@@ -132,6 +132,9 @@ const playerUpdateOrCreate = async (
 ) => {
   let firebase_token = req.body.firebase_token;
   let pictureUrl = req.body.picture_url;
+  let email = req.body.email;
+  let phone = req.body.phone;
+  let fb_access_token = req.body.fb_access_token;
   let friends = req.body.friends;
   let ip = req.clientIp;
   if (process.env.APP_ENV == "development") {
@@ -160,6 +163,7 @@ const playerUpdateOrCreate = async (
           (friend) => friend.type === "GAME"
         );
         friendsMap = [...friendsMap, ...oldGameFirends];
+
         if (player.duId !== duId) {
           let deviceLogs = player.deviceLog.filter(
             (deviceLog) => deviceLog !== duId
@@ -168,25 +172,33 @@ const playerUpdateOrCreate = async (
           player.deviceLog = deviceLogs;
         }
         player.name = name;
+        player.email = phone;
+        player.phone = phone;
         player.fbId = fbId;
+        player.fb_access_token = fb_access_token;
         player.pictureUrl = pictureUrl;
         player.friends = friendsMap;
         player.loginId = loginId;
         player.duId = duId;
-        player.save();
-        var token = generateJwtToken(player);
-         playerResponse(req, res, next, player._id, (playerData) => {
-          var data = {
-            isNewPlayer: false,
-            token: token,
-            player: playerData,
-          };
-          var socketMessage = {
-            message: "New Device Login",
-            data: data,
-          };
-          SocketSingleton.io.emit(`login_${player.loginId}`, socketMessage);
-          response(res, true, 200, "Player Update Successfull", data);
+        player.save().then((result) => {
+          var token = generateJwtToken(result);
+          playerResponse(req, res, next, player._id, (playerData) => {
+            var data = {
+              isNewPlayer: false,
+              token: token,
+              player: playerData,
+            };
+            var socketMessage = {
+              message: "New Device Login",
+              data: data,
+            };
+            SocketSingleton.io.emit(`login_${player.loginId}`, socketMessage);
+            response(res, true, 200, "Player Update Successfull", data);
+          })
+        }).catch((err) => {
+          const error = new Error(err);
+          error.status = 500;
+          return next(error);
         });
       } else {
         const firstReward = await FirstReward.findOne().sort("_id");
@@ -203,7 +215,10 @@ const playerUpdateOrCreate = async (
         }
         player = new Player({
           name: name,
+          email: email,
+          phone: phone,
           fbId: fbId,
+          fb_access_token: fb_access_token,
           duId: duId,
           loginId: loginId,
           userId: tempUserId,
@@ -216,13 +231,15 @@ const playerUpdateOrCreate = async (
           currentXP: 0,
           currentLevelXP: 0,
           deviceLog: [duId],
+          totalWinCoin: [],
+          weeklyWinCoin: [],
           level: 0,
         });
         player
           .save()
           .then((result) => {
             var token = generateJwtToken(result);
-            playerResponse(req,res,next,result._id,(playerData)=>{
+            playerResponse(req, res, next, result._id, (playerData) => {
               var data = {
                 isNewPlayer: true,
                 token: token,

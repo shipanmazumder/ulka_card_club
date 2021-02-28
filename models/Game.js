@@ -17,7 +17,7 @@ const gameSchema = new Schema(
       type: String,
       required: true,
     },
-    game_unique_id:{
+    gameUniqueId:{
         type:String,
         required:true
     },

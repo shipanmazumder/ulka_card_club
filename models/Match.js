@@ -46,7 +46,7 @@ const Player = new Schema({
 });
 const matchSchema = new Schema(
   {
-    match_unique_id: {
+    matchUniqueId: {
       type: String,
       required: true,
     },

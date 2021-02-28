@@ -7,6 +7,7 @@ const { gameOverValidate } = require("../validator/gameOverValidate");
 const { gameOver, gameAdd, gameStart } = require("../controllers/API/GameController");
 const Player = require("../models/Player");
 const { gameStartValidate } = require("../validator/gameStartValidate.js");
+const { globalLeaderBoard } = require("../controllers/API/LeaderBoardController");
 
 const route = express.Router();
 /* GET home page. */
@@ -26,6 +27,7 @@ route.get("/search-friends",isAuth,searchFriends)
 route.post("/game-start",gameStartValidate ,isAuth,gameStart)
 route.post("/game-over",gameOverValidate,isAuth,gameOver)
 route.post("/game-add",isAuth,gameAdd)
+route.get("/leaderboard",isAuth,globalLeaderBoard)
 route.get("/test",async (req,res,next)=>{
   try {
     let player=await Player.find();
