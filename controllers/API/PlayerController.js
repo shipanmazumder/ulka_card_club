@@ -84,6 +84,52 @@ exports.playerAuthentic = async (req, res, next) => {
       });
   }
 };
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
+exports.playerInfo=(req,res,next)=>{
+  let player=req.user;
+  playerResponse(req, res, next, player._id, (playerData) => {
+    var data = {
+      player: playerData,
+    };
+    response(res, true, 200, "Player Info", data);
+  })
+}
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
+exports.otherPlayerInfo=(req,res,next)=>{
+  let id=req.query.userId;
+  Player.findOne({userId:id})
+    .then((player)=>{
+      if(!player){
+        return response(res,false,404,"No Player Found",null);
+      }
+      playerResponse(req, res, next, player._id, (playerData) => {
+        playerData.inventory=null;
+        var data = {
+          player: playerData,
+        };
+        response(res, true, 200, "Player Info", data);
+      })
+    })
+    .catch((err)=>{
+
+    })
+}
+/**
+ * 
+ * @param {*} req 
+ * @param {*} res 
+ * @param {*} next 
+ */
 exports.searchFriends = (req, res, next) => {
   let name = req.query.name;
   console.log(req.user.loginId);
@@ -192,7 +238,7 @@ const playerUpdateOrCreate = async (
               message: "New Device Login",
               data: data,
             };
-            SocketSingleton.io.emit(`login_${player.loginId}`, socketMessage);
+            SocketSingleton.io.emit(`login_${player.userId}`, socketMessage);
             response(res, true, 200, "Player Update Successfull", data);
           })
         }).catch((err) => {
@@ -249,7 +295,7 @@ const playerUpdateOrCreate = async (
                 message: "New Device Login",
                 data: player,
               };
-              SocketSingleton.io.emit(`login_${player.loginId}`, socketMessage);
+              SocketSingleton.io.emit(`login_${player.userId}`, socketMessage);
               response(res, true, 200, "Player Add Successfull", data);
             });
           })

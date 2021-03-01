@@ -48,10 +48,8 @@ exports.playerResponse =  (rew,res,next,id,onProcessDone) => {
         });
       }
       data = {
-        location: {
-          country: player.location.country,
-          city: player.location.city,
-        },
+        country: player.location.country,
+        city: player.location.city,
         name: player.name,
         fbId: player.fbId,
         userId: player.userId,
@@ -64,20 +62,19 @@ exports.playerResponse =  (rew,res,next,id,onProcessDone) => {
         totalWinMatch: player.totalWinMatch,
         totalPlayedMatch: player.totalPlayedMatch,
         mostPlayedGames: mostPlayedGames,
+        avaterSelected:2,
+        frameSelected:2,
+        bannerSelected:2,
         inventory: {
           avatars: {
-            selected: 2,
             unlocked: [],
             locked: [],
           },
           frames: {
-            selected: 3,
             unlocked: [],
             locked: [],
           },
-
           banners: {
-            selected: 5,
             unlocked: [],
             locked: [],
           },

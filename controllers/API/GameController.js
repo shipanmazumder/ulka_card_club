@@ -10,23 +10,265 @@ const { response } = require("../../util/responseFormat");
 const { collectXP } = require("../../util/XPCalculation");
 const alphabet = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz-";
 const nanoid = customAlphabet(alphabet, 10);
+
 exports.gameAdd = (req, res, next) => {
-  let game = new Game({
-    name: "Teen Patti",
-    gameUniqueId: 1234,
-    winXP: 6,
-    loseXP: 1,
-    roundXP: 0.5,
-    gameMode: [
-      {
-        modeName: "First",
-        modeAmount: 500,
-      },
-    ],
-  });
-  game.save();
-  return response(res, false, 404, "No Games found", null);
+  let gameData=[
+    {
+      name: "NineCard",
+      gameUniqueId: 1001,
+      winXP: 3,
+      loseXP: 1,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "Hazari",
+      gameUniqueId: 1002,
+      winXP: 8,
+      loseXP: 4,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "Chatai",
+      gameUniqueId: 1004,
+      winXP: 8,
+      loseXP: 2,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "GinRummy",
+      gameUniqueId: 1006,
+      winXP: 8,
+      loseXP: 2,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "TwentyNineCardGame",
+      gameUniqueId: 1007,
+      winXP: 20,
+      loseXP: 5,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "CallBreak",
+      gameUniqueId: 1008,
+      winXP: 8,
+      loseXP: 4,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "ClassicSolitaire",
+      gameUniqueId: 1010,
+      winXP: 8,
+      loseXP: 2,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "SevenOnSeven",
+      gameUniqueId: 1013,
+      winXP: 8,
+      loseXP: 2,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "Hearts",
+      gameUniqueId: 1014,
+      winXP: 8,
+      loseXP: 2,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "CallBridge",
+      gameUniqueId: 1015,
+      winXP: 8,
+      loseXP: 4,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "DoTeenPuch",
+      gameUniqueId: 1023,
+      winXP: 8,
+      loseXP: 2,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "Rummy",
+      gameUniqueId: 1027,
+      winXP: 8,
+      loseXP: 2,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "Poker",
+      gameUniqueId: 1035,
+      winXP: 6,
+      loseXP: 1,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "BalckJack",
+      gameUniqueId: 1037,
+      winXP: 2,
+      loseXP: 1,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "TeenPatti",
+      gameUniqueId: 1044,
+      winXP: 6,
+      loseXP: 1,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "Spades",
+      gameUniqueId: 1045,
+      winXP: 8,
+      loseXP: 2,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "SpiderSolitaire",
+      gameUniqueId: 1046,
+      winXP: 8,
+      loseXP: 2,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+    {
+      name: "CardMatch",
+      gameUniqueId: 1047,
+      winXP: 8,
+      loseXP: 2,
+      roundXP: 0.5,
+      gameMode: [
+        {
+          modeName: "First",
+          modeAmount: 500,
+        },
+      ]
+    },
+  ]
+  Game.insertMany(gameData).then((result)=>{
+    return response(res, false, 404, "No Games found", null);
+  })
+  .catch((err)=>{
+    console.log(err);
+  })
 };
+exports.getAllGames=(req,res,next)=>{
+  Game.find()
+  .then((games)=>{
+    var data={
+      games:games
+    }
+    response(res, true, 200, "All Games", data);
+  })
+  .catch((err)=>{
+    const error = new Error(err);
+    error.status = 500;
+    return next(error);
+  })
+}
 exports.gameStart=async (req,res,next)=>{
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
@@ -95,7 +337,6 @@ exports.gameStart=async (req,res,next)=>{
           for(var j=0;j<diffLevel-1;j++){
             currentLevelXP+=currentLevelXP*0.1;
           }
-          totalPlayedMatch=randomIntFromInterval(totalPlayedMatch,(totalPlayedMatch+10))
           totalWinMatch=randomIntFromInterval(totalWinMatch,totalPlayedMatch)
         } else if(level<req.user.level){
           for(var j=0;j<diffLevel-1;j++){
@@ -107,14 +348,22 @@ exports.gameStart=async (req,res,next)=>{
           }else{
             totalPlayedMatch=randomIntFromInterval(1,10)
           }
-          totalWinMatch=randomIntFromInterval(totalWinMatch,totalPlayedMatch)
         }
+        if(totalPlayedMatch<10){
+          totalPlayedMatch=randomIntFromInterval((totalPlayedMatch+5),(totalPlayedMatch+10))
+        }
+        else{
+          totalPlayedMatch=randomIntFromInterval((totalPlayedMatch-5),(totalPlayedMatch+5))
+        }
+        totalWinMatch=randomIntFromInterval(totalWinMatch,totalPlayedMatch)
         totalCoin=randomIntFromInterval((totalCoin+1000),(totalCoin+5000))
         currentLevelXP=Math.round(currentLevelXP);
+        let location=locationGenerate();
         let tempPlayer={
           name:totalPlayers[i],
-          location:locationGenerate(),
-          pictureUrl: "https://ulka-profile-pics.s3.ap-south-1.amazonaws.com/" + gender + "_image_" +picIndex +".jpg",
+          country:location.country,
+          city:location.city,
+          pictureUrl: `https://ulka-profile-pics.s3.ap-south-1.amazonaws.com/${gender}/${gender}_image_${picIndex}.jpg`,
           totalPlayedMatch:totalPlayedMatch,
           totalWinMatch:totalWinMatch,
           currentXP:randomIntFromInterval(5,19),
@@ -125,6 +374,10 @@ exports.gameStart=async (req,res,next)=>{
         }
        players.push(tempPlayer)
        delete tempPlayer.currentLevelXP;
+       tempPlayer.avaterSelected=randomIntFromInterval(1,5)
+       tempPlayer.frameSelected=randomIntFromInterval(1,5)
+       tempPlayer.bannerSelected=randomIntFromInterval(1,5)
+       tempPlayer.inventory=null
        tempPlayers.push(tempPlayer)
       }
       let match=new Match({
