@@ -69,10 +69,10 @@ const playerSchema = new Schema(
     duid: {
       type: String,
     },
-    firebase_token: {
+    firebaseToken: {
       type: String,
     },
-    fb_access_token: {
+    fbAccessToken: {
       type: String,
     },
     pictureUrl: {

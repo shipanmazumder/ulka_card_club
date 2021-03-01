@@ -28,8 +28,8 @@ exports.playerAuthentic = async (req, res, next) => {
   }
   let loginId = "";
   let name = req.body.name;
-  let fbId = req.body.fb_id;
-  let duId = req.body.du_id;
+  let fbId = req.body.fbId;
+  let duId = req.body.duId;
   if (!fbId) {
     Player.findOne({ loginId: duId })
       .then(async (player) => {
@@ -130,11 +130,11 @@ const playerUpdateOrCreate = async (
   res,
   next
 ) => {
-  let firebase_token = req.body.firebase_token;
-  let pictureUrl = req.body.picture_url;
+  let firebaseToken = req.body.firebaseToken;
+  let pictureUrl = req.body.pictureUrl;
   let email = req.body.email;
   let phone = req.body.phone;
-  let fb_access_token = req.body.fb_access_token;
+  let fbAccessToken = req.body.fbAccessToken;
   let friends = req.body.friends;
   let ip = req.clientIp;
   if (process.env.APP_ENV == "development") {
@@ -175,7 +175,7 @@ const playerUpdateOrCreate = async (
         player.email = phone;
         player.phone = phone;
         player.fbId = fbId;
-        player.fb_access_token = fb_access_token;
+        player.fbAccessToken = fbAccessToken;
         player.pictureUrl = pictureUrl;
         player.friends = friendsMap;
         player.loginId = loginId;
@@ -218,11 +218,11 @@ const playerUpdateOrCreate = async (
           email: email,
           phone: phone,
           fbId: fbId,
-          fb_access_token: fb_access_token,
+          fbAccessToken: fbAccessToken,
           duId: duId,
           loginId: loginId,
           userId: tempUserId,
-          firebase_token: firebase_token,
+          firebaseToken: firebaseToken,
           pictureUrl: pictureUrl,
           totalCoin: firstReward.coinAmount,
           friends: friendsMap,

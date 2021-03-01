@@ -32,9 +32,9 @@ exports.gameStart=async (req,res,next)=>{
   if (!errors.isEmpty()) {
     return validationError(res, errors);
   }
-  let gameId = req.body.game_id;
-  let totalPlayer = req.body.total_player;
-  let gameMode = req.body.game_mode;
+  let gameId = req.body.gameId;
+  let totalPlayer = req.body.totalPlayer;
+  let gameMode = req.body.gameMode;
   Game.findOne({ gameUniqueId: gameId })
     .then(async (game) => {
       if (!game) {
@@ -177,9 +177,9 @@ exports.gameOver = (req, res, next) => {
   if (!errors.isEmpty()) {
     return validationError(res, errors);
   }
-  let matchId = req.body.match_id;
+  let matchId = req.body.matchId;
   let position = req.body.position;
-  let totalRound = req.body.total_round;
+  let totalRound = req.body.totalRound;
   let winStatus = false;
   let player=req.user;
     Match.findOne({matchUniqueId:matchId})
@@ -271,7 +271,7 @@ let gameCoinCollection=(winStatus,mode_amount)=>{
   return currentMatchCoin;
 }
 let gamePlayHistory = (
-  game_id,
+  gameId,
   player,
   winStatus,
   gameModeName,
@@ -284,7 +284,7 @@ let gamePlayHistory = (
   return {
     currentTotalCoin: currentTotalCoin,
     playHistory: {
-      gameId: game_id,
+      gameId: gameId,
       position: position,
       gameMode: gameModeName,
       totalRound: totalRound,
