@@ -1,6 +1,6 @@
 const { check } = require("express-validator");
 exports.gameOverValidate = [
-  check("match_id")
+  check("matchId")
     .trim()
     .not()
     .isEmpty()
@@ -10,7 +10,7 @@ exports.gameOverValidate = [
     .not()
     .isEmpty()
     .withMessage("Position Required"),
-  check("total_round")
+  check("totalRound")
     .trim()
     .not()
     .isEmpty()

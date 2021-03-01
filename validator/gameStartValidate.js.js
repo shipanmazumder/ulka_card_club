@@ -1,15 +1,15 @@
 const { check } = require("express-validator");
 exports.gameStartValidate = [
-  check("game_id")
+  check("gameId")
     .trim()
     .not()
     .isEmpty()
     .withMessage("Game Id Required"),
-  check("game_mode")
+  check("gameMode")
     .not()
     .isEmpty()
     .withMessage("Game Mode Required"),
-  check("total_player")
+  check("totalPlayer")
     .trim()
     .not()
     .isEmpty()
